@@ -11,7 +11,13 @@ import {
   Shield,
   ArrowRight,
   Clock,
-  Flame
+  Flame,
+  Phone,
+  MapPin,
+  Droplet,
+  Wind,
+  Trash,
+  ShoppingBag
 } from 'lucide-react';
 import { productsAPI, cartAPI, getImageUrl } from '@/app/api';
 import { useStore } from '@/app/store';
@@ -158,7 +164,7 @@ const Homepage: React.FC = () => {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between py-4">
             <div className="flex items-center space-x-8">
-              <h1 className="text-2xl font-bold text-orange-500 cursor-pointer" onClick={() => navigate('/')}>ShopHub</h1>
+              <h1 className="text-2xl font-bold text-orange-500 cursor-pointer" onClick={() => navigate('/')}>Neatify</h1>
               <nav className="hidden md:flex space-x-6">
                 <a href="#" className="hover:text-orange-400 transition">Today's Deals</a>
                 <a href="#" className="hover:text-orange-400 transition">New Arrivals</a>
@@ -170,7 +176,7 @@ const Homepage: React.FC = () => {
               <div className="flex">
                 <input
                   type="text"
-                  placeholder="Search ShopHub"
+                  placeholder="Search Neatify"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="flex-1 px-4 py-2 rounded-l-md text-black focus:outline-none"
@@ -216,65 +222,104 @@ const Homepage: React.FC = () => {
       </header>
 
       {/* Hero Banner */}
-      <section className="relative bg-gradient-to-r from-orange-600 via-orange-500 to-yellow-500 text-white overflow-hidden">
+      <section className="relative bg-gradient-to-r from-orange-600 via-orange-500 to-yellow-500 overflow-hidden">
         <div className="absolute inset-0 bg-black/10"></div>
-        <div className="container mx-auto px-4 py-20 relative z-10">
-          <div className="max-w-3xl">
-            <div className="flex items-center space-x-2 mb-4">
-              <Sparkles className="text-yellow-200 animate-pulse" />
-              <span className="text-yellow-100 font-semibold uppercase tracking-wide text-sm">Limited Time Offer</span>
-            </div>
-            <h2 className="text-5xl md:text-6xl font-extrabold mb-4 leading-tight">Mega Sale Event</h2>
-            <p className="text-xl md:text-2xl mb-6 text-orange-100">Up to 50% off on selected items. Don't miss out!</p>
-            <div className="flex flex-wrap gap-4">
-              <button 
-                onClick={() => navigate('/products')}
-                className="bg-white text-orange-600 px-8 py-3 rounded-lg font-bold hover:bg-gray-100 transition shadow-lg flex items-center gap-2"
-              >
-                Shop Now <ArrowRight size={20} />
-              </button>
-              <button className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/10 transition">
-                View Deals
-              </button>
-            </div>
+        
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 left-10 animate-bounce">
+            <ShoppingBag size={60} className="text-white" />
+          </div>
+          <div className="absolute bottom-20 right-20 animate-pulse">
+            <Wind size={80} className="text-white" />
+          </div>
+          <div className="absolute top-1/3 right-1/4 animate-spin-slow">
+            <Sparkles size={50} className="text-yellow-200" />
           </div>
         </div>
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-20">
-          <Package size={300} />
-        </div>
-      </section>
 
-      {/* Trust Badges */}
-      <section className="bg-white border-b">
-        <div className="container mx-auto px-4 py-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="flex items-center justify-center gap-3 text-gray-700">
-              <Truck className="text-orange-500" size={28} />
-              <div>
-                <div className="font-semibold text-sm">Free Delivery</div>
-                <div className="text-xs text-gray-500">On orders over TZS 50,000</div>
+        <div className="container mx-auto px-4 py-8 relative z-10">
+          <div className="grid md:grid-cols-2 gap-6 items-center">
+            {/* Left Content */}
+            <div className="text-white space-y-4">
+              <div className="flex items-center space-x-3 mb-2">
+                <Sparkles className="text-yellow-200 animate-pulse" size={24} />
+                <span className="text-yellow-100 font-bold uppercase tracking-wider text-sm">Shop with Neatify</span>
+              </div>
+              
+              <h1 className="text-4xl md:text-5xl font-extrabold leading-tight">
+                Neatify
+              </h1>
+              
+              <p className="text-xl md:text-2xl font-semibold text-orange-100">
+                Your one-stop shop for everything you need
+              </p>
+              
+              <p className="text-lg text-white/90">
+                Quality Cleaning Supplies & Tools - Making Clean Easy
+              </p>
+
+              {/* Features Grid */}
+              <div className="grid grid-cols-2 gap-3 pt-2">
+                <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-lg p-2">
+                  <ShoppingBag className="text-yellow-200" size={20} />
+                  <span className="font-semibold text-xs">Cleaning Agents</span>
+                </div>
+                <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-lg p-2">
+                  <Wind className="text-yellow-200" size={20} />
+                  <span className="font-semibold text-xs">Air Fresheners</span>
+                </div>
+                <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-lg p-2">
+                  <Droplet className="text-yellow-200" size={20} />
+                  <span className="font-semibold text-xs">Detergents</span>
+                </div>
+                <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-lg p-2">
+                  <Trash className="text-yellow-200" size={20} />
+                  <span className="font-semibold text-xs">Waste Solutions</span>
+                </div>
+              </div>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-wrap gap-3 pt-2">
+                <button 
+                  onClick={() => navigate('/products')}
+                  className="bg-white text-orange-600 px-6 py-2.5 rounded-xl font-bold hover:bg-gray-100 transition-all shadow-2xl flex items-center gap-2 text-sm hover:scale-105"
+                >
+                  Shop Now <ArrowRight size={18} />
+                </button>
+                <button 
+                  onClick={() => navigate('/products')}
+                  className="border-2 border-white text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-white/10 transition-all text-sm"
+                >
+                  Discover Great Deals
+                </button>
+              </div>
+
+              {/* Contact Info */}
+              <div className="flex flex-col space-y-2 pt-2 bg-white/10 backdrop-blur-sm rounded-xl p-3">
+                <div className="flex items-center space-x-2">
+                  <Phone className="text-yellow-200" size={16} />
+                  <div className="flex gap-3 text-xs font-medium">
+                    <a href="tel:0719883695" className="hover:text-yellow-200 transition">0719 883 695</a>
+                    <span>|</span>
+                    <a href="tel:0685395844" className="hover:text-yellow-200 transition">0685 395 844</a>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <MapPin className="text-yellow-200" size={16} />
+                  <span className="text-xs font-medium">BIASHARA COMPLEX, Komakoma</span>
+                </div>
               </div>
             </div>
-            <div className="flex items-center justify-center gap-3 text-gray-700">
-              <Shield className="text-green-500" size={28} />
-              <div>
-                <div className="font-semibold text-sm">Secure Payment</div>
-                <div className="text-xs text-gray-500">100% protected</div>
-              </div>
-            </div>
-            <div className="flex items-center justify-center gap-3 text-gray-700">
-              <Clock className="text-blue-500" size={28} />
-              <div>
-                <div className="font-semibold text-sm">24/7 Support</div>
-                <div className="text-xs text-gray-500">Always here to help</div>
-              </div>
-            </div>
-            <div className="flex items-center justify-center gap-3 text-gray-700">
-              <Zap className="text-yellow-500" size={28} />
-              <div>
-                <div className="font-semibold text-sm">Fast Checkout</div>
-                <div className="text-xs text-gray-500">Quick & easy</div>
-              </div>
+
+            {/* Right Image */}
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/20 to-orange-600/20 rounded-3xl blur-3xl"></div>
+              <img 
+                src="/neatify1.png" 
+                alt="Neatify - Cleaning Supplies" 
+                className="relative w-full h-auto rounded-2xl shadow-2xl border-4 border-white/20"
+              />
             </div>
           </div>
         </div>
@@ -483,32 +528,31 @@ const Homepage: React.FC = () => {
         </div>
       </section>
 
-      {/* Newsletter Section */}
-      <section className="bg-gradient-to-r from-orange-500 to-orange-600 py-12">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-white mb-3">Stay Updated!</h2>
-          <p className="text-orange-100 mb-6 max-w-xl mx-auto">Subscribe to our newsletter and get exclusive deals, new arrivals, and more delivered to your inbox.</p>
-          <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-            <input 
-              type="email" 
-              placeholder="Enter your email" 
-              className="flex-1 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-white"
-            />
-            <button className="bg-gray-900 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-800 transition">
-              Subscribe
-            </button>
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className="bg-gray-900 text-white">
         <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
             {/* Brand */}
             <div className="col-span-2 md:col-span-1">
-              <h1 className="text-2xl font-bold text-orange-500 mb-4">ShopHub</h1>
-              <p className="text-gray-400 text-sm mb-4">Your one-stop shop for everything you need. Quality products, great prices.</p>
+              <h1 className="text-2xl font-bold text-orange-500 mb-4">Neatify</h1>
+              <p className="text-gray-400 text-sm mb-4">Your one-stop shop for all cleaning supplies and tools. Quality products, great prices.</p>
+              
+              {/* Contact Info */}
+              <div className="space-y-2 mb-4">
+                <div className="flex items-center space-x-2 text-gray-400 text-sm">
+                  <Phone size={16} className="text-orange-500" />
+                  <div className="flex gap-2">
+                    <a href="tel:0719883695" className="hover:text-orange-400 transition">0719 883 695</a>
+                    <span>|</span>
+                    <a href="tel:0685395844" className="hover:text-orange-400 transition">0685 395 844</a>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2 text-gray-400 text-sm">
+                  <MapPin size={16} className="text-orange-500" />
+                  <span>BIASHARA COMPLEX, Komakoma</span>
+                </div>
+              </div>
+              
               <div className="flex space-x-4">
                 <a href="#" className="text-gray-400 hover:text-orange-400 transition">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
@@ -561,7 +605,7 @@ const Homepage: React.FC = () => {
           </div>
           <div className="border-t border-gray-800 mt-10 pt-8">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <p className="text-sm text-gray-400">&copy; 2026 ShopHub. All rights reserved.</p>
+              <p className="text-sm text-gray-400">&copy; 2026 Neatify. All rights reserved.</p>
               <div className="flex items-center gap-6 text-sm text-gray-400">
                 <a href="#" className="hover:text-orange-400 transition">Privacy Policy</a>
                 <a href="#" className="hover:text-orange-400 transition">Terms of Service</a>

@@ -53,7 +53,7 @@ const Login: React.FC = () => {
       <div className="w-full max-w-md bg-gray-900/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 p-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
-          <p className="text-gray-400">Sign in to your ShopHub account</p>
+          <p className="text-gray-400">Sign in to your Neatify account</p>
         </div>
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
@@ -108,7 +108,7 @@ const Login: React.FC = () => {
         </form>
         <div className="mt-6 text-center">
           <p className="text-gray-500 text-sm">
-            Secure admin access to ShopHub
+            Secure admin access to Neatify
           </p>
         </div>
       </div>

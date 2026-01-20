@@ -74,7 +74,7 @@ export const useStore = create<AppState>()(
       },
     }),
     {
-      name: 'shophub-storage',
+      name: 'neatify-storage',
     }
   )
 );

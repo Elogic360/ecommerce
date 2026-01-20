@@ -91,7 +91,7 @@ const AdminPanel: React.FC = () => {
                 <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-slate-900 animate-pulse"></div>
               </div>
               <div>
-                <h1 className="text-xl font-bold text-white tracking-tight">ShopHub</h1>
+                <h1 className="text-xl font-bold text-white tracking-tight">Neatify</h1>
                 <p className="text-xs text-slate-400 font-medium">Admin Panel</p>
               </div>
             </div>
