@@ -1,0 +1,9 @@
+[tool.pyright]
+include = ["app"]
+pythonVersion = "3.14"
+pythonPlatform = "Linux"
+typeCheckingMode = "basic"
+reportMissingImports = false
+reportMissingTypeStubs = false
+reportAttributeAccessIssue = false
+useLibraryCodeForTypes = true

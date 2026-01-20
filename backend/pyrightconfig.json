@@ -1,0 +1,18 @@
+{
+  "include": ["app"],
+  "exclude": ["**/__pycache__", "**/alembic/versions"],
+  "typeCheckingMode": "basic",
+  "pythonVersion": "3.14",
+  "pythonPlatform": "Linux",
+  "venvPath": "/",
+  "venv": "bin",
+  "reportMissingImports": false,
+  "reportMissingTypeStubs": false,
+  "reportUnknownMemberType": false,
+  "reportUnknownArgumentType": false,
+  "reportUnknownVariableType": false,
+  "reportGeneralTypeIssues": true,
+  "reportInvalidTypeForm": false,
+  "reportAttributeAccessIssue": false,
+  "useLibraryCodeForTypes": true
+}
