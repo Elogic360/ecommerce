@@ -1,27 +1,27 @@
-fastapi==0.109.0
-uvicorn[standard]==0.27.0
-sqlalchemy==2.0.25
-psycopg2-binary==2.9.9
-pydantic==2.5.3
-pydantic-settings==2.1.0
-python-jose[cryptography]==3.3.0
-passlib[bcrypt]==1.7.4
-python-multipart==0.0.6
-alembic==1.13.1
-python-dotenv==1.0.0
-requests==2.31.0
+fastapi>=0.110.0
+uvicorn[standard]>=0.27.0
+sqlalchemy>=2.0.25
+psycopg2-binary>=2.9.9
+pydantic>=2.7.0
+pydantic-settings>=2.2.0
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+python-multipart>=0.0.9
+alembic>=1.13.1
+python-dotenv>=1.0.0
+requests>=2.31.0
 
 # Image Processing
 Pillow>=10.0.0
 
 # Caching
-redis==5.0.1
-fastapi-cache[redis]==0.1.0
+redis>=5.0.1
+fastapi-cache2[redis]>=0.2.1
 
 # Testing
-pytest==8.0.0
-pytest-cov==4.1.0
-httpx==0.26.0
+pytest>=8.0.0
+pytest-cov>=4.1.0
+httpx>=0.26.0
 
 # Google Auth
 google-auth>=2.0.0
