@@ -16,7 +16,7 @@ Pillow>=10.0.0
 
 # Caching
 redis>=5.0.1
-fastapi-cache[redis]>=0.1.0
+fastapi-cache2[redis]==0.1.9
 
 # Testing
 pytest>=8.0.0
