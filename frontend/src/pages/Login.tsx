@@ -27,44 +27,16 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const { setToken, setUser, user: currentUser } = useStore();
 
-  // Check if user is already logged in
-  if (currentUser) {
-    return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4 relative overflow-hidden">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-500/10 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-orange-500/10 rounded-full blur-[120px]" />
-
-        <div className="bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-800 p-8 md:p-10 max-w-md w-full relative z-10 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 mb-6">
-            <User className="h-8 w-8 text-emerald-400" />
-          </div>
-          <h1 className="text-2xl font-bold text-white mb-2">Welcome back!</h1>
-          <p className="text-slate-400 mb-6">
-            You are already logged in as <span className="text-emerald-400 font-semibold">{currentUser.username || currentUser.email}</span>
-          </p>
-
-          <div className="space-y-3">
-            <button
-              onClick={() => navigate(currentUser.role === 'admin' ? '/admin/dashboard' : '/', { replace: true })}
-              className="w-full bg-emerald-500 text-white py-3 rounded-xl font-semibold hover:bg-emerald-600 transition flex items-center justify-center gap-2"
-            >
-              <LogIn className="h-5 w-5" />
-              Go to Dashboard
-            </button>
-            <button
-              onClick={() => {
-                useStore.getState().logout();
-                // Local state cleanup if needed, though logout redirects usually
-              }}
-              className="w-full bg-slate-800 text-slate-300 py-3 rounded-xl font-semibold hover:bg-slate-700 transition"
-            >
-              Sign Out
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Check if user is already logged in and redirect
+  useEffect(() => {
+    if (currentUser) {
+      if (currentUser.role === 'admin') {
+        navigate('/admin/dashboard', { replace: true });
+      } else {
+        navigate('/', { replace: true });
+      }
+    }
+  }, [currentUser, navigate]);
 
   // Initialize Google Sign In
   useEffect(() => {
