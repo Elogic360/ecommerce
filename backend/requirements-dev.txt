@@ -1,0 +1,50 @@
+# ============================================================================
+# DEVELOPMENT DEPENDENCIES
+# ============================================================================
+# These packages are only needed for development, not production
+# Install with: pip install -r requirements-dev.txt
+# ============================================================================
+
+# Include production requirements
+-r requirements.txt
+
+# ============================================================================
+# CODE QUALITY & LINTING
+# ============================================================================
+black>=24.0.0                    # Code formatter
+flake8>=7.0.0                    # Linting
+isort>=5.13.0                    # Import sorting
+mypy>=1.8.0                      # Static type checking
+pylint>=3.0.0                    # Code analysis
+
+# ============================================================================
+# TESTING & COVERAGE
+# ============================================================================
+pytest-mock>=3.12.0              # Mocking for tests
+faker>=22.0.0                    # Generate fake data for testing
+factory-boy>=3.3.0               # Test fixtures
+coverage[toml]>=7.4.0            # Code coverage
+
+# ============================================================================
+# DEVELOPMENT TOOLS
+# ============================================================================
+ipython>=8.20.0                  # Enhanced Python shell
+ipdb>=0.13.13                    # IPython debugger
+watchfiles>=0.21.0               # Auto-reload for development
+
+# ============================================================================
+# DATABASE MANAGEMENT
+# ============================================================================
+pgcli>=4.0.0                     # PostgreSQL CLI with auto-completion
+
+# ============================================================================
+# API DOCUMENTATION
+# ============================================================================
+# FastAPI automatically generates OpenAPI docs
+# No additional packages needed
+
+# ============================================================================
+# SECURITY SCANNING
+# ============================================================================
+bandit>=1.7.6                    # Security issue scanner
+safety>=3.0.0                    # Check for known security vulnerabilities

@@ -1,19 +1,12 @@
 import axios from 'axios';
 import { useStore } from './store';
+import { config, getImageUrl as getImageUrlFromConfig } from '@/config/env';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
-const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'http://localhost:8000';
-
-// Utility function to get full image URL
-export const getImageUrl = (imagePath: string | null | undefined): string => {
-  if (!imagePath) return '/placeholder-product.svg';
-  if (imagePath.startsWith('http')) return imagePath;
-  const normalized = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
-  return `${API_BASE_URL}${normalized}`;
-};
+// Re-export getImageUrl from centralized config
+export const getImageUrl = getImageUrlFromConfig;
 
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: config.api.url,
   headers: {
     'Content-Type': 'application/json',
   },

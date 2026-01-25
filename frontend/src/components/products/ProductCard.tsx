@@ -87,8 +87,13 @@ const ProductCard: React.FC<ProductCardProps> = memo(({
               alt={product.name}
               className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
               loading="lazy"
+              crossOrigin="anonymous"
+              onError={(e) => {
+                e.currentTarget.src = getImageUrl(null);
+                e.currentTarget.onerror = null;
+              }}
             />
-            
+
             {/* Badges */}
             <div className="absolute left-3 top-3 flex flex-col gap-2">
               <span className={clsx(
@@ -224,8 +229,13 @@ const ProductCard: React.FC<ProductCardProps> = memo(({
             alt={product.name}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             loading="lazy"
+            crossOrigin="anonymous"
+            onError={(e) => {
+              e.currentTarget.src = getImageUrl(null);
+              e.currentTarget.onerror = null;
+            }}
           />
-          
+
           {/* Badges */}
           {discount > 0 && (
             <span className="absolute left-2 top-2 rounded-full bg-red-500 px-2 py-0.5 text-xs font-medium text-white">
@@ -278,9 +288,9 @@ const ProductCard: React.FC<ProductCardProps> = memo(({
           <div className="mt-2">
             <span className={clsx(
               'inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold',
-              !inStock ? 'bg-gray-100 text-gray-700' : 
-              isLowStock ? 'bg-amber-100 text-amber-700' : 
-              'bg-green-100 text-green-700'
+              !inStock ? 'bg-gray-100 text-gray-700' :
+                isLowStock ? 'bg-amber-100 text-amber-700' :
+                  'bg-green-100 text-green-700'
             )}>
               {stockBadge.text}
             </span>

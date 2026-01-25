@@ -2,6 +2,7 @@
  * Product Service - API calls for product-related operations
  */
 import axios from 'axios';
+import { config, getImageUrl as getImageUrlFromConfig } from '@/config/env';
 import type {
   Product,
   ProductSummary,
@@ -14,12 +15,9 @@ import type {
   ReviewsResponse,
 } from '../types/product';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
-const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'http://localhost:8000';
-
 // Create axios instance
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: config.api.url,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -41,12 +39,7 @@ api.interceptors.request.use((config) => {
 /**
  * Get full image URL from relative path
  */
-export const getImageUrl = (imagePath: string | null | undefined): string => {
-  if (!imagePath) return '/placeholder-product.svg';
-  if (imagePath.startsWith('http')) return imagePath;
-  const normalized = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
-  return `${API_BASE_URL}${normalized}`;
-};
+export const getImageUrl = getImageUrlFromConfig;
 
 /**
  * Format price to TZS currency
@@ -96,13 +89,13 @@ export const productService = {
     );
 
     const response = await api.get('/products', { params: cleanParams });
-    
+
     // Transform response to match our interface
     const data = response.data;
     const items = Array.isArray(data) ? data : data.items || [];
     const total = data.total || items.length;
     const pageSize = params.page_size || 12;
-    
+
     return {
       items: items.map(transformProductSummary),
       total,
@@ -188,9 +181,9 @@ export const productService = {
       const response = await api.get(`/products/${productId}/reviews`, {
         params: { skip: (page - 1) * pageSize, limit: pageSize },
       });
-      
+
       const items = Array.isArray(response.data) ? response.data : response.data.items || [];
-      
+
       return {
         items: items.map(transformReview),
         total: response.data.total || items.length,

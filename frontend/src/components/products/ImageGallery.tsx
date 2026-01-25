@@ -115,6 +115,11 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
               ${isZoomed ? `origin-[${zoomPosition.x}%_${zoomPosition.y}%]` : ''}
             `}
             loading="lazy"
+            crossOrigin="anonymous"
+            onError={(e) => {
+              e.currentTarget.src = getImageUrl(null);
+              e.currentTarget.onerror = null;
+            }}
           />
 
           {/* Zoom indicator */}
@@ -190,10 +195,9 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
               className={`
                 flex-shrink-0 rounded-lg overflow-hidden transition-all
                 ${isFullscreen ? 'w-16 h-16' : 'w-20 h-20'}
-                ${
-                  index === selectedIndex
-                    ? 'ring-2 ring-emerald-500 ring-offset-2 ring-offset-slate-900'
-                    : 'ring-1 ring-slate-700 opacity-60 hover:opacity-100'
+                ${index === selectedIndex
+                  ? 'ring-2 ring-emerald-500 ring-offset-2 ring-offset-slate-900'
+                  : 'ring-1 ring-slate-700 opacity-60 hover:opacity-100'
                 }
               `}
               aria-label={`View image ${index + 1}`}
@@ -204,6 +208,11 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
                 alt={image.alt_text || `${productName} - Image ${index + 1}`}
                 className="w-full h-full object-cover"
                 loading="lazy"
+                crossOrigin="anonymous"
+                onError={(e) => {
+                  e.currentTarget.src = getImageUrl(null);
+                  e.currentTarget.onerror = null;
+                }}
               />
             </button>
           ))}

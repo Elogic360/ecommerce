@@ -1,32 +1,64 @@
-fastapi>=0.110.0
-uvicorn[standard]>=0.27.0
-sqlalchemy>=2.0.25
-psycopg2-binary>=2.9.9
-pydantic>=2.7.0
-email-validator>=2.0.0
-pydantic-settings>=2.2.0
-python-jose[cryptography]>=3.3.0
-passlib[bcrypt]>=1.7.4
-python-multipart>=0.0.9
-alembic>=1.13.1
-python-dotenv>=1.0.0
-requests>=2.31.0
+# ============================================================================
+# NEATIFY E-COMMERCE BACKEND - PRODUCTION DEPENDENCIES
+# ============================================================================
+# Python: 3.11+
+# Last Updated: 2026-01-24
+# ============================================================================
 
-# Image Processing
-Pillow>=10.0.0
+# ============================================================================
+# WEB FRAMEWORK & SERVER
+# ============================================================================
+fastapi>=0.110.0,<1.0.0          # Modern web framework
+uvicorn[standard]>=0.27.0,<1.0.0 # ASGI server with performance extras
+python-multipart>=0.0.9          # Form data and file upload support
 
-# Caching
-redis>=4.2.0,<5.0.0
-fastapi-cache2[redis]==0.1.9
+# ============================================================================
+# DATABASE & ORM
+# ============================================================================
+sqlalchemy>=2.0.25,<3.0.0        # SQL toolkit and ORM
+psycopg2-binary>=2.9.9          # PostgreSQL adapter
+alembic>=1.13.1,<2.0.0          # Database migrations
 
-# Testing
-pytest>=8.0.0
-pytest-cov>=4.1.0
-httpx>=0.26.0
+# ============================================================================
+# DATA VALIDATION & SETTINGS
+# ============================================================================
+pydantic>=2.7.0,<3.0.0           # Data validation using Python type hints
+pydantic-settings>=2.2.0,<3.0.0  # Settings management from environment
+email-validator>=2.0.0           # Email validation for pydantic EmailStr
+python-dotenv>=1.0.0             # Load environment variables from .env
 
-# Google Auth
-google-auth>=2.0.0
+# ============================================================================
+# AUTHENTICATION & SECURITY
+# ============================================================================
+passlib[bcrypt]>=1.7.4           # Password hashing library with bcrypt
+python-jose[cryptography]>=3.3.0 # JWT token creation and validation
+bcrypt>=4.1.2                    # Secure password hashing algorithm
 
-# Security (rate limiting)
-# Note: Using custom in-memory rate limiter
-# For production with Redis, add: slowapi==0.1.9
+# ============================================================================
+# GOOGLE OAUTH
+# ============================================================================
+google-auth>=2.0.0,<3.0.0        # Google authentication library
+
+# ============================================================================
+# CACHING & PERFORMANCE
+# ============================================================================
+redis>=4.2.0,<6.0.0              # Redis client for caching
+fastapi-cache2[redis]==0.1.9     # FastAPI caching with Redis backend
+
+# ============================================================================
+# HTTP CLIENT & UTILITIES
+# ============================================================================
+requests>=2.31.0                 # HTTP library for making requests
+httpx>=0.26.0                    # Async HTTP client (for testing & external APIs)
+
+# ============================================================================
+# IMAGE PROCESSING
+# ============================================================================
+Pillow>=10.0.0,<11.0.0           # Image processing library
+
+# ============================================================================
+# TESTING (Required for CI/CD)
+# ============================================================================
+pytest>=8.0.0,<9.0.0             # Testing framework
+pytest-cov>=4.1.0,<5.0.0         # Test coverage reporting
+pytest-asyncio>=0.23.0           # Async test support

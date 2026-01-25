@@ -45,14 +45,16 @@ export default function ProductFormPage() {
 
   const isEdit = Boolean(id);
 
+  // Multi-image state
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [existingImages, setExistingImages] = useState<Array<{ id: number; url: string; is_primary: boolean }>>([]);
+  const [deletedImageIds, setDeletedImageIds] = useState<number[]>([]);
+
   const [formData, setFormData] = useState<ProductFormData>(initialFormData);
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [existingImage, setExistingImage] = useState<string | null>(null);
   const [errors, setErrors] = useState<Partial<Record<keyof ProductFormData, string>>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
-  
+
   // Category creation modal state
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
@@ -77,8 +79,19 @@ export default function ProductFormPage() {
             price: product.original_price?.toString() || product.price?.toString() || '',
             new_price: product.price?.toString() || '',
           });
-          if (product.primary_image) {
-            setExistingImage(product.primary_image);
+
+          // Load existing images
+          if (product.images && product.images.length > 0) {
+            setExistingImages(product.images.map(img => ({
+              id: img.id,
+              url: img.url,
+              is_primary: img.is_primary
+            })));
+          } else if (product.primary_image) {
+            // Fallback for older data structure if needed, though interface suggests images array
+            // Ideally we refetch or trust the images array. 
+            // If products endpoint didn't return images array populated, we might need a separate fetch?
+            // But adminService.productsAPI.getById returns AdminProduct which has images array.
           }
         })
         .catch(() => {
@@ -107,22 +120,31 @@ export default function ProductFormPage() {
   };
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        showToast('Image must be less than 5MB', 'error');
-        return;
-      }
-      setSelectedImage(file);
-      setImagePreview(URL.createObjectURL(file));
-      setExistingImage(null);
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const newFiles = Array.from(files);
+      const validFiles = newFiles.filter(file => {
+        if (file.size > 5 * 1024 * 1024) {
+          showToast(`Skipped ${file.name}: File too large (max 5MB)`, 'error');
+          return false;
+        }
+        return true;
+      });
+
+      setSelectedImages(prev => [...prev, ...validFiles]);
     }
+
+    // Reset input
+    e.target.value = '';
   };
 
-  const removeImage = () => {
-    setSelectedImage(null);
-    setImagePreview(null);
-    setExistingImage(null);
+  const removeSelectedImage = (index: number) => {
+    setSelectedImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const removeExistingImage = (imageId: number) => {
+    setExistingImages(prev => prev.filter(img => img.id !== imageId));
+    setDeletedImageIds(prev => [...prev, imageId]);
   };
 
   // Handle creating a new category
@@ -131,25 +153,25 @@ export default function ProductFormPage() {
       setCategoryError('Category name is required');
       return;
     }
-    
+
     setIsCreatingCategory(true);
     setCategoryError('');
-    
+
     try {
       const response = await adminCategoriesAPI.create({
         name: newCategoryName.trim(),
         description: newCategoryDescription.trim() || undefined,
       });
-      
+
       // Refresh categories list
       await fetchCategories();
-      
+
       // Auto-select the new category
       const newCatId = response.data?.id;
       if (newCatId) {
         setFormData((prev) => ({ ...prev, category_id: newCatId.toString() }));
       }
-      
+
       // Reset and close modal
       setNewCategoryName('');
       setNewCategoryDescription('');
@@ -193,8 +215,8 @@ export default function ProductFormPage() {
     try {
       let savedProduct;
 
+      // 1. Save Product Details
       if (isEdit) {
-        // Use the full update endpoint for editing
         const productData = {
           name: formData.name,
           category_ids: formData.category_id ? [parseInt(formData.category_id)] : [],
@@ -203,9 +225,7 @@ export default function ProductFormPage() {
           sale_price: formData.new_price ? parseFloat(formData.new_price) : undefined,
         };
         savedProduct = await adminService.productsAPI.update(Number(id), productData);
-        showToast('Product updated successfully', 'success');
       } else {
-        // Use the simplified endpoint for creating
         const productData = {
           name: formData.name,
           category_id: formData.category_id ? parseInt(formData.category_id) : null,
@@ -213,16 +233,34 @@ export default function ProductFormPage() {
           new_price: formData.new_price ? parseFloat(formData.new_price) : null,
         };
         savedProduct = await adminService.productsAPI.createSimple(productData);
-        showToast('Product created successfully', 'success');
       }
 
-      // Upload image if selected
-      if (selectedImage && savedProduct) {
-        await adminService.productsAPI.uploadImage(savedProduct.id, selectedImage, true);
+      const productId = savedProduct.id;
+
+      // 2. Process Deletions
+      if (deletedImageIds.length > 0) {
+        await Promise.all(deletedImageIds.map(imgId => adminService.productsAPI.deleteImage(imgId)));
       }
 
+      // 3. Process Uploads
+      if (selectedImages.length > 0) {
+        // First image is primary if there are no existing images, or if specified logic requires it
+        // For simplicity, just upload them. The backend handles default primary logic usually,
+        // or we can set it explicitly.
+
+        // If no existing images and this is the first of selected, make it primary
+        const hasExisting = existingImages.length > 0;
+
+        for (let i = 0; i < selectedImages.length; i++) {
+          const isPrimary = !hasExisting && i === 0;
+          await adminService.productsAPI.uploadImage(productId, selectedImages[i], isPrimary);
+        }
+      }
+
+      showToast(`Product ${isEdit ? 'updated' : 'created'} successfully`, 'success');
       navigate('/admin/products');
     } catch (error: unknown) {
+      console.error('Save error:', error);
       const message = (error as { response?: { data?: { detail?: string } } })?.response?.data?.detail || 'Failed to save product';
       showToast(message, 'error');
     } finally {
@@ -330,59 +368,85 @@ export default function ProductFormPage() {
           </div>
         </section>
 
-        {/* Product Image */}
+        {/* Product Images */}
         <section className="rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-6">
           <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
             <ImageIcon className="h-5 w-5 text-emerald-400" />
-            Product Image
+            Product Images
           </h2>
-          
-          {/* Image Preview */}
-          {(imagePreview || existingImage) && (
-            <div className="relative mb-4 inline-block">
-              <img
-                src={imagePreview || getImageUrl(existingImage || '')}
-                alt="Product preview"
-                className="h-48 w-48 rounded-lg object-cover border border-slate-600"
-              />
-              <button
-                type="button"
-                onClick={removeImage}
-                className="absolute -right-2 -top-2 rounded-full bg-red-500 p-1.5 text-gray-900 dark:text-white hover:bg-red-600"
-                aria-label="Remove image"
-              >
-                <X className="h-4 w-4" />
-              </button>
+
+          <div className="space-y-4">
+            {/* Image Grid */}
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+              {/* Existing Images */}
+              {existingImages.map((img) => (
+                <div key={img.id} className="relative group aspect-square rounded-lg border border-slate-600 overflow-hidden bg-slate-900">
+                  <img
+                    src={getImageUrl(img.url)}
+                    alt="Product"
+                    className="h-full w-full object-cover"
+                    crossOrigin="anonymous"
+                    onError={(e) => {
+                      e.currentTarget.src = getImageUrl(null);
+                      e.currentTarget.onerror = null;
+                    }}
+                  />
+                  {img.is_primary && (
+                    <span className="absolute left-2 top-2 rounded bg-emerald-500 px-1.5 py-0.5 text-[10px] font-bold text-white shadow-sm">
+                      Primary
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => removeExistingImage(img.id)}
+                    className="absolute right-2 top-2 rounded-full bg-red-500 p-1.5 text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-600"
+                    title="Remove image"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
+
+              {/* New Selected Images */}
+              {selectedImages.map((file, index) => (
+                <div key={`new-${index}`} className="relative group aspect-square rounded-lg border border-dashed border-emerald-500/50 overflow-hidden bg-slate-900/50">
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt="New upload"
+                    className="h-full w-full object-cover opacity-80"
+                  />
+                  <span className="absolute bottom-2 right-2 rounded bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/20">
+                    New
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => removeSelectedImage(index)}
+                    className="absolute right-2 top-2 rounded-full bg-red-500 p-1.5 text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-600"
+                    title="Remove upload"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
+
+              {/* Upload Button Block */}
+              <label className="flex aspect-square cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-600 bg-slate-900/30 transition hover:border-emerald-500 hover:bg-slate-900/50">
+                <Upload className="mb-2 h-6 w-6 text-gray-500 dark:text-slate-400" />
+                <span className="text-xs font-medium text-slate-300">Add Images</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageSelect}
+                  className="hidden"
+                  multiple
+                />
+              </label>
             </div>
-          )}
 
-          {/* Upload Button */}
-          {!imagePreview && !existingImage && (
-            <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-600 bg-slate-900/50 p-8 transition hover:border-emerald-500 hover:bg-slate-900">
-              <Upload className="mb-2 h-10 w-10 text-gray-500 dark:text-slate-400" />
-              <span className="text-sm font-medium text-slate-300">Click to upload image</span>
-              <span className="mt-1 text-xs text-slate-500">PNG, JPG up to 5MB</span>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageSelect}
-                className="hidden"
-              />
-            </label>
-          )}
-
-          {(imagePreview || existingImage) && (
-            <label className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-600 px-4 py-2 text-sm text-slate-300 hover:bg-slate-700">
-              <Upload className="h-4 w-4" />
-              Change Image
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageSelect}
-                className="hidden"
-              />
-            </label>
-          )}
+            <p className="text-xs text-slate-500">
+              * Supports multi-select. First uploaded image will be primary if none exist.
+            </p>
+          </div>
         </section>
 
         {/* Pricing */}
@@ -506,7 +570,7 @@ export default function ProductFormPage() {
                 <X className="h-5 w-5" />
               </button>
             </div>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="mb-1 block text-sm font-medium text-slate-300">
@@ -524,7 +588,7 @@ export default function ProductFormPage() {
                   autoFocus
                 />
               </div>
-              
+
               <div>
                 <label className="mb-1 block text-sm font-medium text-slate-300">
                   Description <span className="text-slate-500">(Optional)</span>
@@ -537,7 +601,7 @@ export default function ProductFormPage() {
                   placeholder="Brief description of this category..."
                 />
               </div>
-              
+
               {categoryError && (
                 <p className="flex items-center gap-1 text-sm text-red-400">
                   <AlertCircle className="h-4 w-4" />
@@ -545,7 +609,7 @@ export default function ProductFormPage() {
                 </p>
               )}
             </div>
-            
+
             <div className="mt-6 flex justify-end gap-3">
               <button
                 type="button"

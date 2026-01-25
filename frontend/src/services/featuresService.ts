@@ -3,6 +3,7 @@
  * Wishlists, Coupons, Loyalty, Notifications, Returns, Shipping
  */
 import axios from 'axios';
+import { config } from '@/config/env';
 import type {
   WishlistItem,
   WishlistResponse,
@@ -24,11 +25,9 @@ import type {
   AnalyticsSummary,
 } from '../types/features';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
-
 // Create axios instance with auth
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: config.api.url,
   headers: {
     'Content-Type': 'application/json',
   },

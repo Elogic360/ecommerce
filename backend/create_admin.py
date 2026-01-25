@@ -73,7 +73,6 @@ def create_admin_user(
                 # Update existing user to admin
                 existing_email.role = Role.ADMIN.value
                 existing_email.is_active = True
-                existing_email.is_verified = True
                 existing_email.hashed_password = get_password_hash(password)
                 existing_email.updated_at = datetime.now(timezone.utc)
                 db.commit()
@@ -98,7 +97,6 @@ def create_admin_user(
             hashed_password=get_password_hash(password),
             role=Role.ADMIN.value,
             is_active=True,
-            is_verified=True,
             created_at=datetime.now(timezone.utc),
         )
         
@@ -186,9 +184,9 @@ Examples:
     # Get email
     email = args.email
     if not email and not args.no_interactive:
-        email = input("Enter admin email [admin@neatify.com]: ").strip()
+        email = input("Enter Neatify admin email [admin@neatify.market]: ").strip()
         if not email:
-            email = "admin@neatify.com"
+            email = "admin@neatify.market"
     
     if not email:
         print("❌ Email is required!")
@@ -201,9 +199,9 @@ Examples:
     # Get username
     username = args.username
     if not username and not args.no_interactive:
-        username = input("Enter admin username [admin]: ").strip()
+        username = input("Enter Neatify admin username [neatify_admin]: ").strip()
         if not username:
-            username = "admin"
+            username = "neatify_admin"
     
     if not username:
         username = "admin"

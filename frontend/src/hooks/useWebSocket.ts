@@ -3,9 +3,8 @@
  * Handles inventory updates, order status, notifications
  */
 import { useEffect, useRef, useCallback, useState } from 'react';
+import { config } from '@/config/env';
 import type { WebSocketMessage, WebSocketAction } from '../types/features';
-
-const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8000';
 
 interface UseWebSocketOptions {
   autoConnect?: boolean;
@@ -46,8 +45,16 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
       return;
     }
 
+    // Validate WebSocket URL is configured
+    if (!config.websocket.url) {
+      console.error('WebSocket URL not configured. Please set VITE_WS_URL in your environment.');
+      return;
+    }
+
     const token = getToken();
-    const url = token ? `${WS_URL}/ws?token=${token}` : `${WS_URL}/ws`;
+    const url = token
+      ? `${config.websocket.url}/ws?token=${token}`
+      : `${config.websocket.url}/ws`;
 
     try {
       wsRef.current = new WebSocket(url);

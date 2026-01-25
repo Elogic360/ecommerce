@@ -73,7 +73,7 @@ function App() {
           <Route
             path="/admin"
             element={
-              <PrivateRoute>
+              <PrivateRoute requiredRole="admin">
                 <AdminPanel />
               </PrivateRoute>
             }

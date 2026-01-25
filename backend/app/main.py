@@ -50,16 +50,19 @@ class ExceptionHandlingMiddleware(BaseHTTPMiddleware):
 
             # Determine allowed origins from settings (same as CORSMiddleware config)
             try:
-                allowed = settings.ALLOWED_ORIGINS.split(',') if settings.ALLOWED_ORIGINS else ["http://localhost:3000", "http://localhost:5173"]
-            except Exception:
-                allowed = ["http://localhost:3000", "http://localhost:5173"]
+                allowed = settings.cors_origins_list
+            except Exception as config_error:
+                # If we cannot access config during an exception, log and use wildcard
+                logger.error("Cannot access CORS config during exception handling: %s", config_error)
+                allowed = []
 
             origin = request.headers.get("origin")
             response_headers = {}
-            if origin and origin in allowed:
+            if origin and allowed and origin in allowed:
                 response_headers["Access-Control-Allow-Origin"] = origin
             else:
-                response_headers["Access-Control-Allow-Origin"] = allowed[0] if allowed else "*"
+                # Use wildcard only when config is unavailable (exception scenario)
+                response_headers["Access-Control-Allow-Origin"] = "*"
 
             response_headers.update({
                 "Access-Control-Allow-Credentials": "true",
@@ -87,9 +90,10 @@ if settings.RATE_LIMIT_ENABLED:
 app.add_middleware(ExceptionHandlingMiddleware)
 
 # CORS middleware
+# Use centralized configuration helper for parsing origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS.split(',') if settings.ALLOWED_ORIGINS else ["http://localhost:3000", "http://localhost:5173"],
+    allow_origins=settings.cors_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -98,10 +102,20 @@ app.add_middleware(
 # Create uploads directory
 os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
 
+# Custom StaticFiles to add security headers (fix ORB)
+class SecurityStaticFiles(StaticFiles):
+    async def get_response(self, path: str, scope):
+        response = await super().get_response(path, scope)
+        # Add CORP header to prevent OpaqueResponseBlocking
+        response.headers["Cross-Origin-Resource-Policy"] = "cross-origin"
+        # Ensure CORS is also explicitly allowed for these assets
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        return response
+
 # Mount static files
 upload_base_dir = os.path.dirname(settings.UPLOAD_DIR)
 if os.path.exists(upload_base_dir):
-    app.mount("/uploads", StaticFiles(directory=upload_base_dir), name="uploads")
+    app.mount("/uploads", SecurityStaticFiles(directory=upload_base_dir), name="uploads")
 
 # Initialize Redis cache
 @app.on_event("startup")

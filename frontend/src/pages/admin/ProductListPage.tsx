@@ -152,6 +152,11 @@ export default function ProductListPage() {
               src={getImageUrl(row.primary_image)}
               alt={row.name}
               className="h-10 w-10 rounded-lg object-cover"
+              crossOrigin="anonymous"
+              onError={(e) => {
+                e.currentTarget.src = getImageUrl(null);
+                e.currentTarget.onerror = null;
+              }}
             />
           ) : (
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-700">
@@ -201,8 +206,8 @@ export default function ProductListPage() {
             value === 0
               ? 'bg-red-500/10 text-red-400'
               : value < 10
-              ? 'bg-amber-500/10 text-amber-400'
-              : 'bg-emerald-500/10 text-emerald-400'
+                ? 'bg-amber-500/10 text-amber-400'
+                : 'bg-emerald-500/10 text-emerald-400'
           )}
         >
           {value === 0 ? <AlertTriangle className="h-3 w-3" /> : null}

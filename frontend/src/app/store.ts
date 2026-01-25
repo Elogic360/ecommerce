@@ -54,6 +54,7 @@ export const useStore = create<AppState>()(
           localStorage.removeItem('token');
         }
         set({ token });
+        if (!token) set({ user: null });
       },
 
       setCart: (cart) => set({ cart }),

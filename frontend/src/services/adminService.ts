@@ -2,11 +2,10 @@
  * Admin Service - Comprehensive API service for admin operations
  */
 import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+import { config } from '@/config/env';
 
 const adminApi = axios.create({
-  baseURL: API_URL,
+  baseURL: config.api.url,
   headers: {
     'Content-Type': 'application/json',
   },
