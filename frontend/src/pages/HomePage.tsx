@@ -156,7 +156,6 @@ const Homepage: React.FC = () => {
               <nav className="hidden md:flex space-x-6">
                 <a href="#" className="hover:text-orange-400 transition">Today's Deals</a>
                 <a href="#" className="hover:text-orange-400 transition">New Arrivals</a>
-                <a href="#" className="hover:text-orange-400 transition">Best Sellers</a>
               </nav>
             </div>
 
@@ -351,7 +350,13 @@ const Homepage: React.FC = () => {
                       <img
                         src={getImageUrl(product.primary_image) || '/placeholder-product.svg'}
                         alt={product.name}
+                        crossOrigin="anonymous"
                         className={`w-full h-72 object-cover group-hover:scale-105 transition-transform duration-300 ${isOutOfStock ? 'grayscale' : ''}`}
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = '/placeholder-product.svg';
+                          target.onerror = null;
+                        }}
                       />
                       {/* Badges */}
                       <div className="absolute top-4 left-4 flex flex-col gap-2">
@@ -474,7 +479,13 @@ const Homepage: React.FC = () => {
                     <img
                       src={getImageUrl(product.primary_image) || '/placeholder-product.svg'}
                       alt={product.name}
+                      crossOrigin="anonymous"
                       className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-300 ${isOutOfStock ? 'grayscale' : ''}`}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = '/placeholder-product.svg';
+                        target.onerror = null;
+                      }}
                     />
                     {/* Stock Badge */}
                     {isOutOfStock ? (
