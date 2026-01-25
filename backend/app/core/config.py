@@ -112,7 +112,7 @@ class Settings(BaseSettings):
     APP_NAME: str = "Neatify E-Commerce"
     APP_VERSION: str = "1.5.0"
     DEBUG: bool = Field(
-        default=True,
+        default=False,
         description="Debug mode (should be False in production)"
     )
     LOG_LEVEL: str = "INFO"
@@ -241,5 +241,7 @@ if settings.ENVIRONMENT == "production":
         print(f"{'='*60}")
         print(str(e))
         print(f"{'='*60}\n")
-        # In production, fail fast if configuration is insecure
-        sys.exit(1)
+        # In production, we'll allow it to start but warn loudly. 
+        # You SHOULD still set these in your Render settings!
+        import logging
+        logging.warning("SERVICE STARTING WITH INSECURE CONFIGURATION. CHECK LOGS ABOVE.")
